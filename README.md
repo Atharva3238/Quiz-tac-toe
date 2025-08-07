@@ -3,8 +3,6 @@
 
 A modern twist on the classic Tic Tac Toe game that combines strategic gameplay with quiz knowledge. Challenge your friends in real-time multiplayer matches where you must answer questions correctly to earn the right to make your move!
 
-![Quiz Tac Toe Banner](static/background.png)
-
 ## 🎮 Game Modes
 
 ### Quiz Multiplayer
