@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Quiz Multiplayer</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Full height */
+            overflow: hidden; /* Prevents scrolling */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('/static/quiz.png') no-repeat center center/cover;
+            background-size: cover;
+            position: relative; /* Added for back button positioning */
+            backdrop-filter: blur(3px);
+        }
+
+        /* Back button styles */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        /* Wrapper styles */
+        .wrapper {
+            width: 420px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255, 1, 1, 0.671);
+            border-radius: 15px;
+            padding: 30px 40px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        /* Heading styles */
+        h1 {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: #ff5c25;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Button styles with hover effect */
+        button {
+            width: 10em;
+            position: relative;
+            height: 3.5em;
+            border: none;
+            outline: none;
+            background: linear-gradient(45deg, #ff5500, #ff8c42);
+            color: #fff;
+            transition: all 0.3s ease;
+            border-radius: 0.3em;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0; /* Keeps spacing between buttons */
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Button hover effect */
+        button:hover {
+            background: linear-gradient(45deg, #ff8c42, #ff5500);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Button active effect */
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Input styles */
+        .input {
+            width: 100%;
+            max-width: 270px;
+            height: 30px;
+            padding: 12px;
+            font-size: 18px;
+            font-family: "Courier New", monospace;
+            color: #000000;
+            background-color: rgba(0, 0, 0, 0.1);
+            border: 4px solid #ff5500;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 8px 8px 0 rgba(255, 204, 0, 0.5);
+            margin: 15px 0;
+        }
+
+        .input::placeholder {
+            color: #ccc;
+        }
+
+        .input:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0 rgba(255, 55, 0, 0.7);
+        }
+
+        .input:focus {
+            background-color: rgba(255, 204, 0, 0.2);
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .input:focus::placeholder {
+            color: transparent;
+        }
+
+        /* Loading and spinner styles */
+        .loading {
+            font-size: 18px;
+            color: #fff;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-top-color: #ffcc00;
+            animation: spin 1s ease-in-out infinite;
+            margin: auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .wrapper {
+                width: 95%;
+            }
+            button, .input {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <button class="back-button" onclick="goBack()">Back</button>
+
+    <div class="wrapper">
+        <h1>Quiz Multiplayer</h1>
+        <button id="createBtn" onclick="selectCategory()">Create Game</button>
+        <input type="text" id="gameId" class="input" placeholder="Enter Game ID">
+        <button onclick="joinGame()">Join Game</button>
+        <div id="error-message" class="error"></div>
+        <div id="loading" class="loading">Loading...</div>
+        <div id="spinner" class="spinner"></div>
+    </div>
+
+    <script>
+        // Function to redirect to the category selection page
+        function selectCategory() {
+            window.location.href = '/select_category';
+        }
+
+        // Function to join an existing game
+        function joinGame() {
+            const gameId = document.getElementById('gameId').value.trim();
+
+            // Validate the Game ID format
+            if (!/^[a-zA-Z0-9_-]+$/.test(gameId)) {
+                alert('Invalid Game ID. Please enter a valid ID.');
+                return;
+            }
+
+            if (gameId) {
+                // Redirect to the game page
+                window.location.href = `/join_game/${gameId}`;
+            } else {
+                alert('Please enter a valid Game ID.');
+            }
+        }
+
+        // Function to go back to the previous page
+        function goBack() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

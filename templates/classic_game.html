@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Classic Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('/static/joiningpage.png') no-repeat center center/cover;
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+            font-size: 43px;
+            color: #61ff66; /* Light green for contrast with greenish background */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Added shadow for better readability */
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(69, 187, 75, 0.8); /* Semi-transparent dark green background */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px); /* Blur effect to blend with the background */
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgb(247, 239, 128); /* Semi-transparent white border */
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: rgba(56, 142, 60, 0.5); /* Semi-transparent green background */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            color: #c8e6c9; /* Light green for contrast */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Added shadow for better readability */
+        }
+
+        .cell:hover {
+            background-color: rgba(76, 175, 80, 0.7); /* Slightly more opaque green on hover */
+            transform: scale(1.05); /* Slight zoom effect on hover */
+        }
+
+        .cell.taken {
+            cursor: not-allowed;
+            background-color: rgba(46, 125, 50, 0.9); /* More opaque green for taken cells */
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #c8e6c9; /* Light green for contrast */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Added shadow for better readability */
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Darker semi-transparent background */
+            backdrop-filter: blur(5px); /* Blur effect */
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            font-size: 36px;
+            animation: fadeIn 0.3s ease; /* Fade-in animation */
+        }
+
+        #overlay-content {
+            background-color: rgba(46, 125, 50, 0.9); /* Semi-transparent dark green */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #end-message {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #c8e6c9; /* Light green for contrast */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Added shadow for better readability */
+        }
+
+        #overlay button {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #2e7d32; /* Dark green */
+            color: #c8e6c9; /* Light green */
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+            margin: 5px; /* Add some spacing between buttons */
+        }
+
+        #overlay button:hover {
+            background-color: #388e3c; /* Slightly lighter green on hover */
+            transform: scale(1.05); /* Slight zoom effect on hover */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+        }
+
+        #overlay button:active {
+            transform: scale(0.95); /* Slight shrink effect when clicked */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduced shadow when clicked */
+        }
+
+        #overlay button:focus {
+            outline: none; /* Remove default focus outline */
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5); /* Custom focus outline */
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div class="wrapper">
+        <div id="board" class="board"></div>
+    </div>
+    <div id="status">Waiting for players...</div>
+
+    <!-- Overlay for game over -->
+    <div id="overlay">
+        <div id="overlay-content">
+            <h2 id="end-message">Game Over</h2>
+            <button onclick="playAgain()">Play Again</button>
+            <button onclick="goBack()">Back</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const gameId = "{{ game_id }}";
+        let player = null;
+        let gameOver = false;
+
+        // Initialize board
+        const boardDiv = document.getElementById('board');
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.id = `cell-${i}`;
+            cell.onclick = () => makeMove(i);
+            boardDiv.appendChild(cell);
+        }
+
+        // Join the game room
+        socket.emit('join', { game_id: gameId });
+
+        // Handle player role assignment
+        socket.on('player_role', (data) => {
+            if (data.role) {
+                player = data.role;
+                alert(`You are Player ${player}`);
+                document.getElementById('status').textContent = `Current Turn: X`;  // initial turn
+            } else {
+                alert('Game is full! You are spectating.');
+                document.getElementById('status').textContent = 'Spectating...';
+            }
+        });
+
+        socket.on('update_board', (game) => {
+            game.board.forEach((value, index) => {
+                const cell = document.getElementById(`cell-${index}`);
+                cell.textContent = value;
+                if (value) {
+                    cell.classList.add('taken');
+                } else {
+                    cell.classList.remove('taken');
+                }
+            });
+
+            // Update the turn status
+            const status = document.getElementById('status');
+            status.textContent = `Current Turn: ${game.current_turn}`;
+        });
+
+       socket.on('game_over', (data) => {
+    const overlay = document.getElementById('overlay');
+    const overlayMessage = document.getElementById('end-message'); // Corrected ID
+    if (data.winner) {
+        overlayMessage.textContent = `${data.winner} wins!`;
+    } else if (data.draw) {
+        overlayMessage.textContent = "It's a draw!";
+    }
+
+    if (!data.reset) {
+        overlay.style.display = 'flex'; // Show the overlay only if it's game over
+        gameOver = true; // Set gameOver to true
+    }
+});
+
+        function makeMove(index) {
+            if (!gameOver) {
+                const cell = document.getElementById(`cell-${index}`);
+                if (cell.textContent === '') {
+                    socket.emit('move', { game_id: gameId, index, player });
+                }
+            }
+        }
+
+       function playAgain() {
+    gameOver = false;
+    socket.emit('reset_classic_game', { game_id: gameId });
+    
+    // Hide the overlay and reset the board
+    const overlay = document.getElementById('overlay');
+    overlay.style.display = 'none'; // Hide the overlay
+    resetBoard(); // Clear the board and reset status
+}
+        function resetBoard() {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => {
+        cell.textContent = ''; // Clear text content
+        cell.classList.remove('taken'); // Remove the taken class
+    });
+
+    document.getElementById('status').textContent = 'Waiting for players...'; // Reset status message
+    document.getElementById('overlay').style.display = 'none'; // Ensure overlay is hidden
+}
+function goBack() {
+            // Navigate back to the previous page or reset the game state
+            window.history.back(); // Navigates to the previous page in the browser history
+        }
+
+    </script>
+</body>
+</html>

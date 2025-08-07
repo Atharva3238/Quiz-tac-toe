@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #FFA500; /* Yellowish-orange background */
+            background: url('/static/leaderpage.png') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            
+        }
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.5); /* Orange glow */
+            width: 90%;
+            max-width: 800px;
+            border: 2px solid #FF8C00; /* Orange border */
+        }
+        .leaderboard h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            color: #FF4500; /* Dark orange */
+            font-family: 'Press Start 2P', cursive; /* Retro game font */
+            text-shadow: 2px 2px 4px rgba(255, 69, 0, 0.5); /* Text glow */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid #FF8C00; /* Orange border */
+        }
+        th {
+            background-color: #FF8C00; /* Orange for header */
+            color: #fff; /* White text */
+            font-size: 1.2em;
+            font-family: 'Press Start 2P', cursive; /* Retro game font */
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            color: #1a1a1a; /* Dark text */
+            font-size: 1.1em;
+        }
+        tr:hover td {
+            background-color: rgba(255, 140, 0, 0.2); /* Light orange hover effect */
+            color: #1a1a1a;
+        }
+        .back-button {
+            display: block;
+            margin-top: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #FF8C00; /* Orange button */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-family: 'Press Start 2P', cursive; /* Retro game font */
+        }
+        .back-button:hover {
+            background-color: #FF4500; /* Darker orange on hover */
+            transform: scale(1.05); /* Slight zoom effect */
+        }
+        /* Add a subtle animation to the leaderboard */
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 140, 0, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.5); }
+        }
+        .leaderboard {
+            animation: glow 3s infinite; /* Apply glow animation */
+        }
+    </style>
+</head>
+<body>
+    <div class="leaderboard">
+        <h1>Leaderboard</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in leaderboard %}
+                <tr>
+                    <td>{{ user[0] }}</td>
+                    <td>{{ user[1] }}</td>
+                    <td>{{ user[2] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/" class="back-button">Back to Home</a>
+    </div>
+</body>
+</html>

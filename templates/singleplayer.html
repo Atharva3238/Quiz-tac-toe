@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Choose X or O</title>
+    <style>
+        .board {                
+            display: grid;
+            gap: 5px;
+            justify-content: center;
+            margin: 20px auto;
+            
+        }
+        
+        .cell {                 /*makes changes to the cell*/
+        width: 100px;
+        height: 100px;
+        border: 1px solid #1100a9;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        font-weight: bold;
+        background-color: #00e5ff;
+        cursor: pointer;
+        box-shadow: inset 0 0 12px rgba(0, 21, 255, 0.7);
+        transition: all 0.3s ease;
+    }
+
+    .cell:hover {
+        background: transparent;
+        box-shadow: inset 0 0 12px rgba(0, 21, 255, 0.5);
+        transform: scale(1.05);
+    }
+
+    .cell.taken {
+        cursor: not-allowed;
+        background: transparent;
+        color: rgba(100, 100, 100, 0.9);
+        box-shadow: none;
+    }
+
+    .cell.winner {                                                          
+        background: transparent;
+        color: #0dff00;
+        font-weight: bold;
+        box-shadow: 0 0 0px rgba(0, 0, 0, 0.8);
+    }
+
+        #status {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        #overlay {                  /*The game end status overlay*/
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(5px)  ;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        #overlay-content {
+            background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+            padding: 30px;
+            border-radius: 13px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 221, 255, 0.6);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            animation: scaleUp 0.5s ease-in-out;
+        }
+
+        #end-message {
+            font-size: 34px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #0dff00; /* Green glow effect */
+            text-shadow: 0 0 15px #0dff00, 0 0 10px #00ff44;
+        }
+
+        #overlay button {
+            background: linear-gradient(135deg, #14effb, #0064de);
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            margin: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            min-width: 150px;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+        }
+
+        #overlay button:hover {
+            transform: scale(1.2);
+            background: linear-gradient(135deg, #0affc3, #0051a8);
+            box-shadow: 0 8px 15px rgba(49, 255, 255, 0.7), 0 4px 10px rgba(0, 100, 255, 0.6);
+        }
+
+        #overlay button:active {
+            transform: scale(1.1);
+        }
+
+        /* Fade-in animation for the overlay */
+        @keyframes fadeIn {
+            from {
+                background: transparent;
+            }
+            to {
+                background: transparent;
+            }
+        }
+
+        /* Scale-up animation for the content */
+        @keyframes scaleUp {
+            from {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        #symbol-overlay {                         /*choosing the symbol overlay*/
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent; /* Dark background with transparency */
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out; /* Same fadeIn effect */
+            z-index: 10;
+        }
+
+        #symbol-content {
+            background: linear-gradient(135deg, #3a3a3a, #1e1e1e);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            animation: scaleUp 0.3s ease-in-out;
+        }
+
+        #symbol-content h2 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #0dff00; /* Green for vivid look */
+            text-shadow: 0 0 8px #0dff00;
+        }
+
+        #symbol-content button {
+            background: linear-gradient(135deg, #14effb, #0064de);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-width: 50px; /* Ensure consistent width for both buttons */
+            text-align: center;
+        }
+
+        #symbol-content button:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgb(49, 255, 255, 0.7);
+        }
+
+
+
+        #symbol-content button:hover {
+            background-color: #ddd;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: url('/static/singleplayer.png') no-repeat center center/cover;
+
+        }
+
+        .wrapper {
+            width: 420px;
+            background: transparent;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 500px; /* Adjust based on content */
+            position: relative;
+            transition: all 0.4s ease;
+            transform: translateY(-10px);
+        }
+
+        .wrapper:hover {
+            transform: translateY(0);
+            box-shadow: 0 0 30px rgba(0, 0, 0, .3);
+        }
+
+        h1 {
+            margin: 10px 0 10px 0;
+            font-size: 40px;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <body>
+        <div class="wrapper">
+            <h1>Tic Tac Toe</h1>
+            <div id="board" class="board"></div>
+            <h2 id="status">Choose your symbol to start the game.</h2>
+        </div>
+    </body>
+    
+    
+    <div id="overlay">
+        <div id="overlay-content">
+            <h2 id="end-message">Game Over</h2>
+            <button onclick="playAgain()">Play Again</button>
+            <button onclick="goBack()">Back</button>
+        </div>
+    </div>
+    
+    
+    
+
+    <div id="symbol-overlay">
+        <div id="symbol-content">
+            <h2>Choose Your Symbol</h2>
+            <button onclick="setSymbol('X')">X</button>
+            <button onclick="setSymbol('O')">O</button>
+        </div>
+    </div>
+
+    <script>
+        const GRID_SIZE = 3;
+        let board = Array(GRID_SIZE * GRID_SIZE).fill('');
+        let currentPlayer;
+        let playerSymbol;
+        let aiSymbol;
+        let gameOver = false;
+
+        const boardDiv = document.getElementById('board');
+        boardDiv.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 100px)`;
+        boardDiv.style.width = `${GRID_SIZE * 105}px`;
+
+        // Create the board dynamically
+        for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.id = `cell-${i}`;
+            cell.setAttribute('role', 'button');
+            cell.setAttribute('aria-label', `Cell ${i + 1}`);
+            cell.tabIndex = 0; // For keyboard navigation
+            cell.onclick = () => makeMove(i);
+            boardDiv.appendChild(cell);
+        }
+
+        const winningCombinations = getWinningCombinations(GRID_SIZE);
+
+        // Display the symbol choice overlay
+        document.getElementById('symbol-overlay').style.display = 'flex';
+
+        function setSymbol(symbol) {
+            playerSymbol = symbol;
+            aiSymbol = playerSymbol === 'X' ? 'O' : 'X';
+            currentPlayer = playerSymbol; // Start with the player's chosen symbol
+
+            // Add smooth fade-out effect for symbol overlay
+            document.getElementById('symbol-overlay').style.animation = 'fadeOut 0.5s ease-in-out';
+            setTimeout(() => {
+                document.getElementById('symbol-overlay').style.display = 'none';
+                updateStatus();
+                if (currentPlayer === aiSymbol) setTimeout(makeAIMove, 1000);
+            }, 500); // Delay matches fadeOut duration
+        }
+
+        function goBack() {
+            // Navigate back to the previous page or reset the game state
+            window.history.back(); // Navigates to the previous page in the browser history
+        }
+
+
+
+        function makeMove(index) {
+            if (!playerSymbol) {
+                alert("Please choose your symbol to start the game.");
+                return;
+            }
+
+            if (gameOver || board[index] !== '') return;
+
+            board[index] = currentPlayer;
+            document.getElementById(`cell-${index}`).textContent = currentPlayer;
+
+            if (checkWinner()) {
+                highlightWinner(checkWinner());
+                setTimeout(() => endGame(`${currentPlayer} wins!`), 200);
+                return;
+            }
+
+            if (board.every(cell => cell !== '')) {
+                setTimeout(() => endGame("It's a draw!"), 200);
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            updateStatus();
+            if (currentPlayer === aiSymbol) setTimeout(makeAIMove, 500);
+        }
+
+        function makeAIMove() {
+            let bestScore = -Infinity;
+            let bestMove = null;
+
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === '') {
+                    board[i] = aiSymbol;
+                    let score = minimax(board, 0, false);
+                    board[i] = '';
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+
+            if (bestMove !== null) makeMove(bestMove);
+        }
+
+        function checkWinner() {
+            return winningCombinations.find(combination =>
+                combination.every(index => board[index] === currentPlayer)
+            );
+        }
+
+        function highlightWinner(winningCombination) {
+            winningCombination.forEach(index => {
+                document.getElementById(`cell-${index}`).classList.add('winner');
+            });
+        }
+
+        function endGame(message) {
+            gameOver = true;
+            document.getElementById('status').textContent = message;
+            document.getElementById('end-message').textContent = message;
+
+            // Add a delay of 2 seconds before showing the overlay
+            setTimeout(() => {
+                document.getElementById('overlay').style.display = 'flex';
+            }, 500); // 2000 milliseconds = 2 seconds
+        }
+
+
+        function playAgain() {
+            board = Array(GRID_SIZE * GRID_SIZE).fill('');
+            currentPlayer = playerSymbol; // Reset to player's chosen symbol
+            gameOver = false;
+            boardDiv.querySelectorAll('.cell').forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('winner');
+            });
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('symbol-overlay').style.display = 'flex';
+        }
+
+        function updateStatus() {
+            document.getElementById('status').textContent = `Your Symbol: ${playerSymbol || '-'} | Current Turn: ${currentPlayer}`;
+        }
+
+        function minimax(board, depth, isMaximizing) {
+            const scores = { [playerSymbol]: -1, [aiSymbol]: 1, tie: 0 };
+            const result = evaluateWinner();
+
+            if (result !== null) {
+                return scores[result];
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let i = 0; i < board.length; i++) {
+                    if (board[i] === '') {
+                        board[i] = aiSymbol;
+                        let score = minimax(board, depth + 1, false);
+                        board[i] = '';
+                        bestScore = Math.max(score, bestScore);
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < board.length; i++) {
+                    if (board[i] === '') {
+                        board[i] = playerSymbol;
+                        let score = minimax(board, depth + 1, true);
+                        board[i] = '';
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function evaluateWinner() {
+            for (let combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a];
+                }
+            }
+
+            if (board.every(cell => cell !== '')) {
+                return 'tie';
+            }
+
+            return null;
+        }
+
+        function getWinningCombinations(size) {
+            const combinations = [];
+            for (let i = 0; i < size; i++) {
+                combinations.push(
+                    [...Array(size)].map((_, j) => i * size + j), // Rows
+                    [...Array(size)].map((_, j) => j * size + i)  // Columns
+                );
+            }
+            combinations.push(
+                [...Array(size)].map((_, i) => i * (size + 1)), // Diagonal (top-left to bottom-right)
+                [...Array(size)].map((_, i) => (i + 1) * (size - 1)) // Diagonal (top-right to bottom-left)
+            );
+            return combinations;
+        }
+    </script>
+</body>
+</html>

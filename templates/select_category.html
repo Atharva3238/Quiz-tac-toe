@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Category</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('/static/quiz.png') no-repeat center center/cover;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            backdrop-filter: blur(3px);
+            
+        }
+        
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        #categories {
+            flex: 1;
+            margin-right: 20px;
+        }
+        /* Dropdown Styling with Effects */
+        select {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 2px solid #ffcc00;
+            background-color: rgba(255, 204, 0, 0.9); /* Semi-transparent yellow */
+            color: #000;
+            width: 100%;
+            transition: all 0.3s ease;
+            appearance: none; /* Remove default arrow */
+            -webkit-appearance: none; /* For Safari */
+            -moz-appearance: none; /* For Firefox */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23000000"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom arrow */
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+        }
+        select:hover {
+            background-color: rgba(255, 204, 0, 1); /* Fully opaque on hover */
+            border-color: #ff4444;
+            transform: scale(1.02); /* Slight zoom effect */
+        }
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 68, 68, 0.8); /* Glow effect on focus */
+        }
+        /* Button Styling with Effects */
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+            background-color: #ff4444;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        button:hover {
+            background-color: #cc0000;
+            transform: translateY(-3px); /* Lift effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow on hover */
+        }
+        button:active {
+            transform: translateY(0); /* Reset lift effect on click */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Smaller shadow on click */
+        }
+        /* Ripple Effect for Button */
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+        }
+        button:active::after {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+        .loading {
+            font-size: 18px;
+            color: #ffcc00;
+            margin-top: 20px;
+            display: none;
+        }
+        .slideshow-container {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+            border: 5px solid #333;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .slideshow-container img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        .slide {
+            display: none;
+            padding: 20px;
+        }
+        .fade {
+            animation-name: fade;
+            animation-duration: 2s;
+        }
+        @keyframes fade {
+            from {opacity: .4}
+            to {opacity: 1}
+        }
+        .text {
+            font-size: 20px;
+            padding: 10px;
+            color: #ffcc00;
+            text-shadow: 1px 1px 2px #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Side: Select Category -->
+        <div id="categories">
+            <h1>Select a Category</h1>
+            <select id="categoryDropdown">
+                <option value="math">Math</option>
+                <option value="geography">Geography</option>
+                <option value="science">Science</option>
+                <option value="test">Test</option>
+                <option value="history">History</option>
+                <!-- Add more categories as needed -->
+            </select>
+            <button onclick="createGame()">Start Game</button>
+            <div id="loading" class="loading">Loading...</div>
+        </div>
+
+        <!-- Right Side: How to Play Slideshow -->
+        <div class="slideshow-container">
+            <div class="slide fade">
+                <img src="/static/T1.png" alt="How to Play 1">
+                <div class="text">Step 1: Select a category of your choice to start the game.</div>
+            </div>
+            <div class="slide fade">
+                <img src="/static/T2.png" alt="How to Play 2">
+                <div class="text">Step 2: Answer the question correctly before the timer ends.</div>
+            </div>
+            <div class="slide fade">
+                <img src="/static/T3.png" alt="How to Play 3">
+                <div class="text">Step 3: Choose your Cell!</div>
+            </div>
+            <div class="slide fade">
+                <img src="/static/T4.png" alt="How to Play 3">
+                <div class="text">Step 4: Win by getting three correct in a row!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to create a game with the selected category
+        async function createGame() {
+            const category = document.getElementById('categoryDropdown').value;
+            const loadingDiv = document.getElementById('loading');
+
+            // Show loading indicator
+            loadingDiv.style.display = 'block';
+
+            try {
+                // Send a POST request to create a game with the selected category
+                const response = await fetch('/create_game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ category: category }), // Send the selected category
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with status ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Redirect to the game page with the generated game ID
+                window.location.href = `/join_game/${data.game_id}`;
+            } catch (error) {
+                alert('Error creating game. Please try again.');
+                console.error('Error:', error);
+            } finally {
+                // Hide loading indicator
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        // Slideshow functionality
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            let slides = document.getElementsByClassName("slide");
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) { slideIndex = 1 }
+            slides[slideIndex - 1].style.display = "block";
+            setTimeout(showSlides, 5000); // Change image every 5 seconds
+        }
+    </script>
+</body>
+</html>
