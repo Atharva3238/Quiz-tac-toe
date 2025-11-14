@@ -204,6 +204,22 @@ This project is open source and available under the MIT License.
 - Google Fonts for typography
 - Font Awesome for icons
 
+## Screenshots
+  <img width="1920" height="1080" alt="Screenshot 2025-11-14 120046" src="https://github.com/user-attachments/assets/dda9a97d-df2d-4196-8c2c-0a84b34e1f98" />
+  <img width="1920" height="1080" alt="Screenshot 2025-11-14 120009" src="https://github.com/user-attachments/assets/874aa1f7-1342-4f99-b667-306329598088" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-14 120131" src="https://github.com/user-attachments/assets/fa38d0df-a923-45f1-872e-e2098ce7737a" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-14 120151" src="https://github.com/user-attachments/assets/4909ab19-421c-49bf-95a3-c3280c83057c" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-14 120211" src="https://github.com/user-attachments/assets/291f035f-b3d4-4780-8cdd-5f023ac077c3" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-14 120225" src="https://github.com/user-attachments/assets/154e8943-44dc-4ac1-889c-73e746d64d45" />
+<img width="1920" height="1080" alt="Screenshot (210)" src="https://github.com/user-attachments/assets/9889a941-3dbe-42ee-a1ae-5df3a99b0306" />
+<img width="1920" height="1080" alt="Screenshot (211)" src="https://github.com/user-attachments/assets/480bf910-653f-40b0-af72-e64777a93e9d" />
+<img width="1920" height="1080" alt="Screenshot (212)" src="https://github.com/user-attachments/assets/dee57b86-6bf5-472b-a6f9-1d788f9e608b" />
+<img width="1920" height="1080" alt="Screenshot (213)" src="https://github.com/user-attachments/assets/b6333272-e69a-4307-bad8-2bc658d6d984" />
+<img width="1920" height="1080" alt="Screenshot (214)" src="https://github.com/user-attachments/assets/2f75a6cd-cf47-4725-b78d-3f2f338207d5" />
+<img width="1920" height="1080" alt="Screenshot (215)" src="https://github.com/user-attachments/assets/858ec4c0-0a4b-47e0-b10d-d8a279c70321" />
+
+
+
 ## 📞 Support
 
 If you encounter any issues or have questions, please create an issue in the repository.
